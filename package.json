@@ -10,8 +10,8 @@
   "scripts": {
     "start": "node",
     "dev": "nodemon",
-    "test": "mocha",
-    "test:cov": "c8 mocha"
+    "test": "mocha src/** --exit",
+    "test:cov": "c8 mocha src/** --exit"
   },
   "repository": {
     "type": "git",
