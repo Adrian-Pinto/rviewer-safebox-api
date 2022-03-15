@@ -1,0 +1,43 @@
+{
+  "name": "rviewer-safebox-api",
+  "version": "0.0.1",
+  "description": "Securit-ish is a security company which main business is taking care of houses and people belongings.",
+  "main": "index.js",
+  "type": "module",
+  "directories": {
+    "doc": "doc"
+  },
+  "scripts": {
+    "start": "node",
+    "dev": "nodemon",
+    "test": "mocha",
+    "test:cov": "c8 mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Rviewer-Challenges/iln9LsCyjWiLMVyN2XU6.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Rviewer-Challenges/iln9LsCyjWiLMVyN2XU6/issues"
+  },
+  "homepage": "https://github.com/Rviewer-Challenges/iln9LsCyjWiLMVyN2XU6#readme",
+  "devDependencies": {
+    "c8": "^7.11.0",
+    "chai": "^4.3.6",
+    "chai-http": "^4.3.0",
+    "eslint": "^8.11.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.25.4",
+    "mocha": "^9.2.2",
+    "nodemon": "^2.0.15"
+  },
+  "dependencies": {
+    "ajv": "^8.10.0",
+    "dotenv": "^16.0.0",
+    "express": "^4.17.3",
+    "lowdb": "^3.0.0"
+  }
+}
