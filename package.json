@@ -8,7 +8,7 @@
     "doc": "doc"
   },
   "scripts": {
-    "start": "node main.js",
+    "start": "node .",
     "dev": "nodemon",
     "test": "mocha src/** --exit",
     "test:cov": "c8 mocha src/** --exit"
