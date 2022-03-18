@@ -12,7 +12,7 @@ createConnection();
 
 initAPI({
   port: PORT,
-  services: getConnection,
+  services: { getConnection },
   cert: {
     key,
     crt,
