@@ -9,7 +9,7 @@
   },
   "scripts": {
     "start": "node .",
-    "dev": "nodemon",
+    "dev": "nodemon . --ignore ./database/db.json",
     "test": "mocha src/** --exit",
     "test:cov": "c8 mocha src/** --exit"
   },
