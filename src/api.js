@@ -2,6 +2,7 @@ import { stdout } from 'process';
 import https from 'https';
 import express from 'express';
 import servicesInjector from './api/v0/middlewares/servicesInjector.js';
+import boxRouter from './api/v0/routes/boxRouter.js';
 
 const initAPI = ({ cert, port, services }) => {
   const api = express();
@@ -16,9 +17,7 @@ const initAPI = ({ cert, port, services }) => {
     console.log(getConnection());
     res.send('Hello world');
   });
-  // on same router files
-  // todo - /safebox route
-  // todo - /safebox/{id}/items route require auth
+  api.use('/safebox', boxRouter);
 
   https.createServer({
     key: cert.key,
