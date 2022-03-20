@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import fs from 'fs';
 import initAPI from './src/api.js';
-import { createConnection, getConnection } from './src/config/lowdbConfig.js';
+import { createConnection, getDatabase } from './src/config/lowdbConfig.js';
 
 const PORT = process.env.PORT || 3001;
 
@@ -12,7 +12,7 @@ createConnection();
 
 initAPI({
   port: PORT,
-  services: { getConnection },
+  services: { getDatabase },
   cert: {
     key,
     crt,
