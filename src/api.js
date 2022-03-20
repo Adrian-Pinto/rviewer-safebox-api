@@ -18,7 +18,11 @@ const initAPI = ({ cert, port, services }) => {
     console.log(getConnection());
     res.send('Hello world');
   });
+
   api.use('/safebox', boxRouter);
+
+  // todo - 404 router
+  // todo - errorHandler
 
   https.createServer({
     key: cert.key,
