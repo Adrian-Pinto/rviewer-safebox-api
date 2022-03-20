@@ -12,6 +12,7 @@ const initAPI = ({ cert, port, services }) => {
   api.use(express.json());
 
   api.use(servicesInjector(services));
+  // test path
   api.use('/', (req, res) => {
     const { services: { getConnection } } = req;
     console.log(getConnection());

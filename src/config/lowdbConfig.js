@@ -13,9 +13,9 @@ const createConnection = () => {
   database.write();
 };
 
-const getConnection = () => database;
+const getDatabase = () => database;
 
 export {
   createConnection,
-  getConnection,
+  getDatabase,
 };
