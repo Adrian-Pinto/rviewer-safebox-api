@@ -15,6 +15,10 @@
       "no-console": 0,
       "no-unused-expressions": 0,
       "import/extensions": 0,
-      "import/no-unresolved": 0
+      "import/no-unresolved": 0,
+      "no-unused-vars": ["error", {
+        "argsIgnorePattern": "^_"
+      }],
+      "consistent-return": 0
     }
 }
