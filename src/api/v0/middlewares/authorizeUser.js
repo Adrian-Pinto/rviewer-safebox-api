@@ -9,15 +9,15 @@ export default async (req, res, next) => {
     'base64',
   ).toString('ascii').split(':')[1];
 
-  if (!authorization && !boxSchema({ boxId, password })) res.status(422).send('Malformed expected data');
+  if (!authorization && !boxSchema({ boxId, password })) return next({ status: 422, message: 'Malformed expected data' });
 
   const isBox = req.services.getConnection().find((box) => box.id === boxId);
 
-  if (!isBox) res.satus(404).send('Requested safebox does not exist');
+  if (!isBox) return next({ status: 404, message: 'Requested safebox does not exist' });
 
   const hashPassword = doHash(password);
 
-  if (hashPassword !== isBox.password) res.status(401).send('Specified Basic Auth does not match');
+  if (hashPassword !== isBox.password) return next({ status: 401, message: 'Specified Basic Auth does not match' });
 
   req.boxObject = isBox;
   next();
