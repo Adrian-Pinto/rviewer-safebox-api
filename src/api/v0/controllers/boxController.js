@@ -37,7 +37,7 @@ const postNewBox = ({ services, body: { name, password } }, res, next) => {
     return result;
   })().then(
     res.status(200).send({ id: boxId }),
-  );
+  ).catch((error) => next(error));
 };
 
 const getBoxItemsById = ({ boxObject }, res) => {
@@ -50,22 +50,25 @@ const getBoxItemsById = ({ boxObject }, res) => {
   res.status(200).send('ok');
 };
 
-const putNewBoxItemById = ({ boxObject, body: { items } }, res) => {
-  console.log(boxObject);
-  console.log(items);
+const putNewBoxItemById = ({ services, boxObject, body: { items } }, res, next) => {
+  if (!itemsModel(items)) return next({ status: 422, message: 'Malformed expected data' });
 
-  console.log(itemsModel(items));
+  const isBox = services.getDatabase().data.boxContent.find(
+    (box) => boxObject.boxContentId === box.id,
+  );
 
-  // if (!verifi body.items) -> return next({ status: 422 mesage: 'Malformed expected data' })
-  // recovery boxContent by id
-  // encryptItems = items.map -> encrypt(item)
-  // concatenate encrypItems with spread operator
-  // boxContent.items = [...boxContent.items, ...encryptItems]
-  // await db.write()
-  //  done res status 200 send 'Content correctly added to the safebox'
-  //  fail return next({ status: 500 mesage: 'Unexpected API error' })
+  if (!isBox) return next({ status: 500, message: 'Unexpected API error' });
 
-  res.status(200).send('');
+  const encryptedItems = items.map((item) => encryptString(item));
+
+  isBox.items = [...isBox.items, ...encryptedItems];
+
+  (async () => {
+    const result = await services.getDatabase().write();
+    return result;
+  })()
+    .then(() => res.status(200).send('Content correctly added to the safebox'))
+    .catch((error) => next(error));
 };
 
 export default {
