@@ -6,12 +6,12 @@ const boxRouter = Router();
 
 boxRouter
   .route('/')
-  .post(boxController.createBox);
+  .post(boxController.postNewBox);
 
 boxRouter
-  .route('/safebox/:boxId/items')
+  .route('/:boxId/items')
   .all(authorizeUser)
-  .get(boxController.getBoxById)
-  .put(boxController.putBoxById);
+  .get(boxController.getBoxItemsById)
+  .put(boxController.putNewBoxItemById);
 
 export default boxRouter;
