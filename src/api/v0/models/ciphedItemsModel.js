@@ -5,24 +5,20 @@ const ajv = new Ajv();
 const schema = {
   type: 'object',
   properties: {
-    id: {
+    initVector: {
       type: 'string',
     },
-    boxName: {
+    ciphedString: {
       type: 'string',
     },
-    boxPassword: {
-      type: 'string',
-    },
-    boxContentId: {
+    authTag: {
       type: 'string',
     },
   },
   required: [
-    'id',
-    'boxName',
-    'boxPassword',
-    'boxContentId',
+    'initVector',
+    'ciphedString',
+    'authTag',
   ],
 };
 
