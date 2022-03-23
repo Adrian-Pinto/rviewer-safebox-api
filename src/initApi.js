@@ -12,26 +12,26 @@ const initAPI = ({ cert, port, services }) => {
   api.use(express.json());
 
   api.use(servicesInjector(services));
-  // test path
-  api.use('/', (req, res) => {
-    const { services: { getConnection } } = req;
-    console.log(getConnection());
-    res.send('Hello world');
-  });
 
   api.use('/safebox', boxRouter);
 
   // todo - 404 router
-  // todo - errorHandler
+  api.use((err, _req, res, _next) => {
+    res.status(err.status).send(err.message);
+  });
 
   https.createServer({
     key: cert.key,
     cert: cert.crt,
+    ca: cert.ca,
+    rejectUnauthorized: false,
   }, api)
     .listen(
       port,
       () => stdout.write(`Server runing on port ${port}\n`),
     );
+
+  return api;
 };
 
 export default initAPI;
