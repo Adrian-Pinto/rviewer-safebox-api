@@ -2,7 +2,6 @@ import getNewId from '../../../utils/getNewId.js';
 import doHash from '../../../utils/doHash.js';
 import { encryptString, decryptString } from '../../../utils/ciphString.js';
 import itemsModel from '../models/itemsModel.js';
-// import boxContentSchema
 
 const postNewBox = ({ services, body: { name, password } }, res, next) => {
   const isPasswordStrong = /(?=(.*[A-Z]){2,})(?=(.*[!@#$&*]){1,})(?=(.*[0-9]){2,})(?=(.*[a-z]){3,}).{12,}/.test(password);
@@ -40,14 +39,16 @@ const postNewBox = ({ services, body: { name, password } }, res, next) => {
   ).catch((error) => next(error));
 };
 
-const getBoxItemsById = ({ boxObject }, res) => {
-  console.log(boxObject);
+const getBoxItemsById = ({ services, boxObject }, res, next) => {
+  const isBox = services.getDatabase().data.boxContent.find(
+    (box) => boxObject.boxContentId === box.id,
+  );
 
-  // recovery boxContent by id
-  // decryptItems = boxContentItems.map -> decrypt(item)
-  // response status 200 send {[decryptItems]}
+  if (!isBox) return next({ status: 500, message: 'Unexpected API error' });
 
-  res.status(200).send('ok');
+  const decryptItems = isBox.items.map((item) => decryptString(item));
+
+  res.status(200).send({ items: decryptItems });
 };
 
 const putNewBoxItemById = ({ services, boxObject, body: { items } }, res, next) => {
