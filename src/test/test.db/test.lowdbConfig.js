@@ -1,16 +1,16 @@
-import { LowSync, MemorySync } from 'lowdb';
+import { Low, Memory } from 'lowdb';
 
 let database;
 
-const createConnection = () => {
-  database = new LowSync(new MemorySync('./src/test/test.db/test.db.json'));
+const createConnection = async () => {
+  database = await new Low(new Memory());
 
-  database.read();
+  await database.read();
   database.data ||= {
     boxes: [],
     boxContent: [],
   };
-  database.write();
+  await database.write();
 };
 
 const getDatabase = () => database;
