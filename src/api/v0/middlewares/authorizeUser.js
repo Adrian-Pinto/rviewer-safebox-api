@@ -11,13 +11,13 @@ export default async (req, res, next) => {
 
   if (!authorization && !boxSchema({ boxId, password })) return next({ status: 422, message: 'Malformed expected data' });
 
-  const isBox = req.services.getConnection().find((box) => box.id === boxId);
+  const isBox = req.services.getDatabase().data.boxes.find((box) => box.id === boxId);
 
   if (!isBox) return next({ status: 404, message: 'Requested safebox does not exist' });
 
   const hashPassword = doHash(password);
 
-  if (hashPassword !== isBox.password) return next({ status: 401, message: 'Specified Basic Auth does not match' });
+  if (hashPassword !== isBox.boxPassword) return next({ status: 401, message: 'Specified Basic Auth does not match' });
 
   req.boxObject = isBox;
   next();
