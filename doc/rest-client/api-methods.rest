@@ -1,0 +1,44 @@
+### POST complete
+POST https://localhost:3000/safebox/
+Content-Type: application/json
+
+{
+  "name": "tes2t-name",
+  "password": "AA@01abcQW12"
+}
+
+### POST missing name
+POST https://localhost:3000/safebox/
+Content-Type: application/json
+
+{
+  "name": " ",
+  "password": "1234"
+}
+
+### POST missing pass
+POST https://localhost:3000/safebox/
+Content-Type: application/json
+
+{
+  "name": "test",
+  "password": ""
+}
+
+### PUT with Basic auth and some items
+PUT https://localhost:3000/safebox/0b817423-20d1-4e85-95f1-947d07249918/items
+Content-Type: application/json
+Authorization: Basic test-name:AA@01abcQW12
+
+{
+  "items": [
+    "item0",
+    "item1",
+    "item2"
+    ]
+}
+
+### GET
+GET https://localhost:3000/safebox/0ea62f47-c336-47b4-bd5a-4b8840162208/items
+Content-Type: application/json
+Authorization: Basic test-name:AA@01abcQW12
