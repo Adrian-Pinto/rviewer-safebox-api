@@ -1,16 +1,16 @@
-import { LowSync, JSONFileSync } from 'lowdb';
+import { Low, JSONFile } from 'lowdb';
 
 let database;
 
-const createConnection = () => {
-  database = new LowSync(new JSONFileSync('./database/db.json'));
+const createConnection = async () => {
+  database = await new Low(new JSONFile('./database/db.json'));
 
-  database.read();
+  await database.read();
   database.data ||= {
     boxes: [],
     boxContent: [],
   };
-  database.write();
+  await database.write();
 };
 
 const getDatabase = () => database;
