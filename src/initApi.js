@@ -16,6 +16,7 @@ const initAPI = ({ cert, port, services }) => {
   api.use('/safebox', boxRouter);
 
   // todo - 404 router
+  // todo - add errorHandler on external function
   api.use((err, _req, res, _next) => {
     res.status(err.status).send(err.message);
   });
