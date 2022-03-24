@@ -12,7 +12,7 @@ POST https://localhost:3000/safebox/
 Content-Type: application/json
 
 {
-  "name": " ",
+  "name": "",
   "password": "1234"
 }
 
@@ -26,7 +26,7 @@ Content-Type: application/json
 }
 
 ### PUT with Basic auth and some items
-PUT https://localhost:3000/safebox/0b817423-20d1-4e85-95f1-947d07249918/items
+PUT https://localhost:3000/safebox/763a9a8c-5cb7-49be-bb45-d218f5e42241/items
 Content-Type: application/json
 Authorization: Basic test-name:AA@01abcQW12
 
@@ -38,7 +38,17 @@ Authorization: Basic test-name:AA@01abcQW12
     ]
 }
 
+### PUT with Basic auth but miss items
+PUT https://localhost:3000/safebox/763a9a8c-5cb7-49be-bb45-d218f5e42241/items
+Content-Type: application/json
+Authorization: Basic test-name:AA@01abcQW12
+
+{
+  "items": [
+    ]
+}
+
 ### GET
-GET https://localhost:3000/safebox/0ea62f47-c336-47b4-bd5a-4b8840162208/items
+GET https://localhost:3000/safebox/763a9a8c-5cb7-49be-bb45-d218f5e42241/items
 Content-Type: application/json
 Authorization: Basic test-name:AA@01abcQW12
