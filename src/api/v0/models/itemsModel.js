@@ -7,7 +7,7 @@ const schema = {
   items: {
     type: 'string',
   },
-  minItems: 2,
+  minItems: 1,
 };
 
 export default ajv.compile(schema);
