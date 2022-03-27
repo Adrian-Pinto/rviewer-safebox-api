@@ -12,7 +12,7 @@ const postNewBox = ({ services, body: { name, password } }, res, next) => {
 
   if (!(isPasswordStrong && isName && isPassword)) return next({ status: 422, message: 'Malformed expected data' });
 
-  const isBox = services.getDatabase().data.boxes.find((box) => box.boxName === name);
+  const isBox = services.getDatabase().data.boxes.find((box) => box.name === name);
 
   if (isBox) return next({ status: 409, message: 'Safebox already exist' });
 
@@ -23,8 +23,8 @@ const postNewBox = ({ services, body: { name, password } }, res, next) => {
   //   !  - if validate fails return status 500 message Unexpected API error
   services.getDatabase().data.boxes.push({
     id: boxId,
-    boxName: name,
-    boxPassword: doHash(password),
+    name,
+    password: doHash(password),
     boxContentId,
   });
 
@@ -33,12 +33,10 @@ const postNewBox = ({ services, body: { name, password } }, res, next) => {
     items: [],
   });
 
-  (async () => {
-    const result = await services.getDatabase().write();
-    return result;
-  })().then(
-    res.status(200).send({ id: boxId }),
-  ).catch((error) => next(error));
+  (async () => services.getDatabase().write())()
+    .then(
+      res.status(200).json({ id: boxId }),
+    ).catch((error) => next(error));
 };
 
 const getBoxItemsById = ({ services, boxObject }, res, next) => {
@@ -66,10 +64,7 @@ const putNewBoxItemById = ({ services, boxObject, body: { items } }, res, next) 
 
   isBox.items = [...isBox.items, ...encryptedItems];
 
-  (async () => {
-    const result = await services.getDatabase().write();
-    return result;
-  })()
+  (async () => services.getDatabase().write())()
     .then(() => res.status(200).send('Content correctly added to the safebox'))
     .catch((error) => next(error));
 };

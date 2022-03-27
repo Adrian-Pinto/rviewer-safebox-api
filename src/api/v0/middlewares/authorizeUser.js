@@ -17,7 +17,7 @@ export default async (req, res, next) => {
 
   const hashPassword = doHash(password);
 
-  if (hashPassword !== isBox.boxPassword) return next({ status: 401, message: 'Specified Basic Auth does not match' });
+  if (hashPassword !== isBox.password) return next({ status: 401, message: 'Specified Basic Auth does not match' });
 
   req.boxObject = isBox;
   next();
