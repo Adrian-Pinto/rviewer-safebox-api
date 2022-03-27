@@ -2,6 +2,7 @@ import { stdout } from 'process';
 import https from 'https';
 import express from 'express';
 import servicesInjector from './api/v0/middlewares/servicesInjector.js';
+import errorHandler from './utils/errorHandler.js';
 import boxRouter from './api/v0/routes/boxRouter.js';
 
 const initAPI = ({ cert, port, services }) => {
@@ -15,11 +16,8 @@ const initAPI = ({ cert, port, services }) => {
 
   api.use('/safebox', boxRouter);
 
-  // todo - 404 router
-  // todo - add errorHandler on external function
-  api.use((err, _req, res, _next) => {
-    res.status(err.status).send(err.message);
-  });
+  // todo - notFoundHandler
+  api.use(errorHandler);
 
   https.createServer({
     key: cert.key,
