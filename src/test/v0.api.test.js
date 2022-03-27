@@ -1,12 +1,12 @@
 import { describe } from 'mocha';
 import chai, { expect } from 'chai';
+import sinon from 'sinon';
 import chaiHttp from 'chai-http';
-// check sinon to mock errors
-// check proxyQuire to proxy petitions
 import fs from 'fs';
 import dotenv from 'dotenv';
 import { createConnection, getDatabase } from './test.db/test.lowdbConfig.js';
 import initAPI from '../initApi.js';
+import errorHandler from '../utils/errorHandler.js';
 
 chai.use(chaiHttp);
 
@@ -23,6 +23,13 @@ const api = initAPI({
 });
 
 describe('Testing v0 endpoints', () => {
+  beforeEach('reset bd', () => {
+    getDatabase().data = {
+      boxes: [],
+      boxContent: [],
+    };
+  });
+
   describe('Given: POST call on /v0/safebox', () => {
     describe(`When: Request header includes name: String
         * : Request header includes password: String`, () => {
@@ -52,11 +59,18 @@ describe('Testing v0 endpoints', () => {
             name: 'test-safebox',
             password: 'AA@01abcQW12',
           })
-          .end((err, res) => {
-            expect(res).to.have.status(409);
-            expect(res.text).to.be.equal('Safebox already exist');
-            done();
+          .end(() => {
+            chai.request(api)
+              .post('/safebox')
+              .send({
+                name: 'test-safebox',
+                password: 'AA@01abcQW12',
+              }).then((res) => {
+                expect(res).to.have.status(409);
+                expect(res.text).to.be.equal('Safebox already exist');
+              });
           });
+        done();
       });
     });
 
@@ -77,25 +91,29 @@ describe('Testing v0 endpoints', () => {
       });
     });
     describe('When: Occurs an API error', () => {
-      it.skip('Then: Response code 500', () => {
-        // todo - mock error
+      it(`Then: Response code 500
+                 * : Response description 'Unexpected API error`, (done) => {
+        const mockResponse = () => ({
+          status: sinon.stub().returnsThis(),
+          send: sinon.stub().returnsThis(),
+        });
+
+        const res = mockResponse();
+
+        errorHandler(Error(), null, res, null);
+
+        expect(res.status.firstCall.args[0]).to.be.equal(500);
+        expect(res.send.firstCall.args[0]).to.be.equal('Unexpected API error');
+        done();
       });
     });
   });
 
-  // Maybe need to add beforeAll and clear db before each test
   describe('Given: GET call on /v0/safebox/{id}/items', () => {
     describe(`When: Safebox id exists
         * : Password in Auth header is correct`, () => {
       it(`Then: Response code 200
             * : Response JSON with array of stored items`, (done) => {
-      // todo - add petition to add some data before get test
-      // todo - add reset db on before function
-        getDatabase().data = {
-          boxes: [],
-          boxContent: [],
-        };
-
         chai.request(api)
           .post('/safebox')
           .send({
@@ -127,11 +145,6 @@ describe('Testing v0 endpoints', () => {
     describe(`When: Safebox id exist
        But: Password in header is incorrect`, () => {
       it('Then: Response code 401', (done) => {
-        getDatabase().data = {
-          boxes: [],
-          boxContent: [],
-        };
-
         chai.request(api)
           .post('/safebox')
           .send({
@@ -164,11 +177,6 @@ describe('Testing v0 endpoints', () => {
     describe('When: Request header auth is missing', () => {
       it(`Then: Response code 422
             * : Response description 'Malformed expected data'`, (done) => {
-        getDatabase().data = {
-          boxes: [],
-          boxContent: [],
-        };
-
         chai.request(api)
           .post('/safebox')
           .send({
@@ -186,9 +194,25 @@ describe('Testing v0 endpoints', () => {
       });
     });
     describe('When: Occurs an API error', () => {
-      it.skip(`Then: Response code 500
-            * : Response description 'Unexpected API error'`, () => {
-        // todo - mock error
+      it(`Then: Response code 500
+            * : Response description 'Unexpected API error'`, (done) => {
+        chai.request(api)
+          .post('/safebox')
+          .send({
+            name: 'test-safebox',
+            password: 'AA@01abcQW12',
+          }).end((err, { body: { id } }) => {
+            getDatabase().data.boxContent = [];
+
+            chai.request(api)
+              .get(`/safebox/${id}/items`)
+              .auth('test-safebox', 'AA@01abcQW12')
+              .then((res) => {
+                expect(res.status).to.be.equal(500);
+                expect(res.text).to.be.equal('Unexpected API error');
+              });
+          });
+        done();
       });
     });
   });
@@ -197,15 +221,9 @@ describe('Testing v0 endpoints', () => {
     describe(`When: Safebox id exist
         * : Password in Auth header is correct
         * : Request body is valid`, () => {
-      // todo - before() store length of db.boxContent['id'].items.length
       it(`Then: Response code 200
             * : Response description 'Content correctly added to the safebox'
             * : Now in database {id}.items array have x more items`, (done) => {
-        getDatabase().data = {
-          boxes: [],
-          boxContent: [],
-        };
-
         chai.request(api)
           .post('/safebox')
           .send({
@@ -234,11 +252,6 @@ describe('Testing v0 endpoints', () => {
        But: Password in Auth header is incorrect`, () => {
       it(`Then: Response code 401
             * : Response description 'Specified Basic Auth does not match'`, (done) => {
-        getDatabase().data = {
-          boxes: [],
-          boxContent: [],
-        };
-
         chai.request(api)
           .post('/safebox')
           .send({
@@ -280,11 +293,6 @@ describe('Testing v0 endpoints', () => {
        But: Request body is invalid`, () => {
       it(`Then: Response code 422
             * : Response description 'Malformed expected data'`, (done) => {
-        getDatabase().data = {
-          boxes: [],
-          boxContent: [],
-        };
-
         chai.request(api)
           .post('/safebox')
           .send({
@@ -307,9 +315,30 @@ describe('Testing v0 endpoints', () => {
       });
     });
     describe('When: Occurs an API error', () => {
-      it.skip(`Then: Response code 500
-            * : Response description 'Unexpected API error'`, () => {
-        // todo - mock error
+      it(`Then: Response code 500
+            * : Response description 'Unexpected API error'`, (done) => {
+        chai.request(api)
+          .post('/safebox')
+          .send({
+            name: 'test-safebox',
+            password: 'AA@01abcQW12',
+          }).end((err, { body: { id } }) => {
+            getDatabase().data.boxContent = [];
+
+            chai.request(api)
+              .put(`/safebox/${id}/items`)
+              .auth('test-safebox', 'AA@01abcQW12')
+              .send({
+                items: [
+                  'item0',
+                ],
+              })
+              .then((res) => {
+                expect(res.status).to.be.equal(500);
+                expect(res.text).to.be.equal('Unexpected API error');
+              });
+          });
+        done();
       });
     });
   });
