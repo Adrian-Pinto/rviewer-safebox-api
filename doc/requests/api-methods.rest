@@ -83,3 +83,8 @@ Authorization: Basic test-name:AA@01abcQW12
 GET {{baseUrl}}/safebox/{{id}}/items
 Content-Type: application/json
 Authorization: Basic test-name:AA@01abcQW12
+
+### GET unexist endpoint
+GET {{baseUrl}}/safebox/{{id}}/
+Content-Type: application/json
+Authorization: Basic test-name:AA@01abcQW12
