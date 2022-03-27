@@ -4,10 +4,8 @@ import { encryptString, decryptString } from '../../../utils/ciphString.js';
 import itemsModel from '../models/itemsModel.js';
 
 const postNewBox = ({ services, body: { name, password } }, res, next) => {
-  // todo - add the two follow lines to check then over one model
   const isPasswordStrong = /(?=(.*[A-Z]){2,})(?=(.*[!@#$&*]){1,})(?=(.*[0-9]){2,})(?=(.*[a-z]){3,}).{12,}/.test(password);
   const isName = !!name.trim().length;
-  // todo - remove isPassword
   const isPassword = !!password.trim().length;
 
   if (!(isPasswordStrong && isName && isPassword)) return next({ status: 422, message: 'Malformed expected data' });
@@ -19,8 +17,6 @@ const postNewBox = ({ services, body: { name, password } }, res, next) => {
   const boxId = getNewId();
   const boxContentId = getNewId();
 
-  // todo - build object out and validate with models before push then on db
-  //   !  - if validate fails return status 500 message Unexpected API error
   services.getDatabase().data.boxes.push({
     id: boxId,
     name,
