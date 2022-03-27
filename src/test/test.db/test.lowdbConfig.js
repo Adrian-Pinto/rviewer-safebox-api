@@ -3,7 +3,7 @@ import { Low, Memory } from 'lowdb';
 let database;
 
 const createConnection = async () => {
-  database = await new Low(new Memory());
+  database = new Low(new Memory());
 
   await database.read();
   database.data ||= {
