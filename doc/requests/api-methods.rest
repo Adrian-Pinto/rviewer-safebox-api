@@ -1,0 +1,90 @@
+###Create
+### POST new Box
+### PUT new items in Box
+### GET items From box
+
+
+### Globals
+@baseUrl = https://localhost:3000
+###
+@randomName = {{getRandomName.response.body.$[0]}}
+###
+@id = {{createId.response.body.id}}
+
+# @name getRandomName
+GET http://names.drycodes.com/1 HTTP/1.1
+Content-Type: application/json
+
+###
+
+# @name createId
+POST {{baseUrl}}/safebox/
+Content-Type: application/json
+
+{
+  "name": "{{randomName}}",
+  "password": "AA@01abcQW12"
+}
+
+###
+
+
+### POST complete
+POST {{baseUrl}}/safebox/
+Content-Type: application/json
+
+{
+  "name": "tes2t-name",
+  "password": "AA@01abcQW12"
+}
+
+### POST missing name
+POST {{baseUrl}}/safebox/
+Content-Type: application/json
+
+{
+  "name": "",
+  "password": "1234"
+}
+
+### POST missing pass
+POST {{baseUrl}}/safebox/
+Content-Type: application/json
+
+{
+  "name": "test",
+  "password": ""
+}
+
+### PUT with Basic auth and some items
+PUT {{baseUrl}}/safebox/{{id}}/items
+Content-Type: application/json
+Authorization: Basic test-name:AA@01abcQW12
+
+{
+  "items": [
+    "item0",
+    "item1",
+    "item2"
+    ]
+}
+
+### PUT with Basic auth but miss items
+PUT {{baseUrl}}/safebox/{{id}}/items
+Content-Type: application/json
+Authorization: Basic test-name:AA@01abcQW12
+
+{
+  "items": [
+    ]
+}
+
+### GET
+GET {{baseUrl}}/safebox/{{id}}/items
+Content-Type: application/json
+Authorization: Basic test-name:AA@01abcQW12
+
+### GET unexist endpoint
+GET {{baseUrl}}/safebox/{{id}}/
+Content-Type: application/json
+Authorization: Basic test-name:AA@01abcQW12

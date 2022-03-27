@@ -2,16 +2,16 @@
   "name": "rviewer-safebox-api",
   "version": "0.0.1",
   "description": "Securit-ish is a security company which main business is taking care of houses and people belongings.",
-  "main": "index.js",
+  "main": "main.js",
   "type": "module",
   "directories": {
     "doc": "doc"
   },
   "scripts": {
-    "start": "node",
-    "dev": "nodemon",
-    "test": "mocha",
-    "test:cov": "c8 mocha"
+    "start": "node .",
+    "dev": "nodemon . --ignore ./database/db.json",
+    "test": "mocha src/** --exit",
+    "test:cov": "c8 mocha src/** --exit"
   },
   "repository": {
     "type": "git",
@@ -38,6 +38,7 @@
     "ajv": "^8.10.0",
     "dotenv": "^16.0.0",
     "express": "^4.17.3",
-    "lowdb": "^3.0.0"
+    "lowdb": "^3.0.0",
+    "sinon": "^13.0.1"
   }
 }

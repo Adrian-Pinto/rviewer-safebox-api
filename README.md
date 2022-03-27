@@ -1,4 +1,24 @@
-# Securit-ish Challenge 
+# Safebox API
+Safebox is a Javascript challenge part of [Rviewer Codeathon]()
+
+ - The Challenge
+   - Requirements
+     - Beta
+     - V1
+   - What are looking for?
+ - External dependencies
+ - Installation & Init.
+   - .env
+   - certs
+   - launch server
+ - Runing test
+   - Setup
+   - Launch test
+ - Usage
+   - curl
+   - Rest Client
+
+# The Challenge 
 
 Securit-ish is a security company which main business is taking care of 
 houses and people belongings. 
@@ -10,7 +30,7 @@ providing them the ability to control their safebox remotely through a mobile ap
 As you know, the API should be strong and secure enough to avoid leaks and security
 issues.
 
-## Current Status
+**Current Status**
 
 The CEO of Securit-ish, who does not have technical background, has paid for an external
 consultant to develop the product. 
