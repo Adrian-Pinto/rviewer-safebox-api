@@ -49,7 +49,6 @@ describe('Testing v0 endpoints', () => {
           });
       });
     });
-
     describe('When: Request header includes existing safebox name', () => {
       it(`Then: Response status 409
             * : Response text 'Safebox already exist'`, (done) => {
@@ -73,7 +72,6 @@ describe('Testing v0 endpoints', () => {
         done();
       });
     });
-
     describe('When: Request header missing name or password', () => {
       it(`Then: Response status 422
             * : Response text 'Malformed expected data'`, (done) => {
@@ -90,9 +88,22 @@ describe('Testing v0 endpoints', () => {
           });
       });
     });
+    describe('When: Request missing endpoint', () => {
+      it(`Then: Response status 404
+            * : Response text 'Requested endpoint does not exist'`, (done) => {
+        chai.request(api)
+          .get('/unexistEndpoint')
+          .send()
+          .end((err, res) => {
+            expect(res).to.have.status(404);
+            expect(res.text).to.be.equal('Requested endpoint does not exist');
+            done();
+          });
+      });
+    });
     describe('When: Occurs an API error', () => {
       it(`Then: Response code 500
-                 * : Response description 'Unexpected API error`, (done) => {
+            * : Response description 'Unexpected API error`, (done) => {
         const mockResponse = () => ({
           status: sinon.stub().returnsThis(),
           send: sinon.stub().returnsThis(),
