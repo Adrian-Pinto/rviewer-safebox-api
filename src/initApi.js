@@ -3,6 +3,7 @@ import https from 'https';
 import express from 'express';
 import servicesInjector from './api/v0/middlewares/servicesInjector.js';
 import errorHandler from './utils/errorHandler.js';
+import notFoundHandler from './utils/notFoundHandler.js';
 import boxRouter from './api/v0/routes/boxRouter.js';
 
 const initAPI = ({ cert, port, services }) => {
@@ -16,7 +17,8 @@ const initAPI = ({ cert, port, services }) => {
 
   api.use('/safebox', boxRouter);
 
-  // todo - notFoundHandler
+  api.use(notFoundHandler);
+
   api.use(errorHandler);
 
   https.createServer({
