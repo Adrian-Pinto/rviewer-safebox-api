@@ -31,10 +31,9 @@ describe('Testing v0 endpoints', () => {
   });
 
   describe('Given: POST call on /v0/safebox', () => {
-    describe(`When: Request header includes name: String
-        * : Request header includes password: String`, () => {
-      it(`Then: Response code 200
-            * : Response description equal to "Safebox correctly created"
+    describe(`When: Request body includes name: String
+        * : Request body includes password: String`, () => {
+      it(`Then: Response status 200
             * :  JSON with key id: String`, (done) => {
         chai.request(api)
           .post('/safebox')
@@ -49,7 +48,7 @@ describe('Testing v0 endpoints', () => {
           });
       });
     });
-    describe('When: Request header includes existing safebox name', () => {
+    describe('When: Request body includes existing safebox name', () => {
       it(`Then: Response status 409
             * : Response text 'Safebox already exist'`, (done) => {
         chai.request(api)
@@ -72,7 +71,7 @@ describe('Testing v0 endpoints', () => {
         done();
       });
     });
-    describe('When: Request header missing name or password', () => {
+    describe('When: Request body missing name or password', () => {
       it(`Then: Response status 422
             * : Response text 'Malformed expected data'`, (done) => {
         chai.request(api)
