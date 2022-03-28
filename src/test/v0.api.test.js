@@ -3,14 +3,12 @@ import chai, { expect } from 'chai';
 import sinon from 'sinon';
 import chaiHttp from 'chai-http';
 import fs from 'fs';
-import dotenv from 'dotenv';
 import { createConnection, getDatabase } from './test.db/test.lowdbConfig.js';
 import initAPI from '../initApi.js';
 import errorHandler from '../utils/errorHandler.js';
 
 chai.use(chaiHttp);
 
-dotenv.config();
 createConnection();
 
 const api = initAPI({
