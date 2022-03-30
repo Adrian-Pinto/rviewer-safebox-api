@@ -2,7 +2,6 @@ import { describe } from 'mocha';
 import chai, { expect } from 'chai';
 import sinon from 'sinon';
 import chaiHttp from 'chai-http';
-import fs from 'fs';
 import { createConnection, getDatabase } from './test.db/test.lowdbConfig.js';
 import initAPI from '../initApi.js';
 import errorHandler from '../utils/errorHandler.js';
@@ -12,12 +11,7 @@ chai.use(chaiHttp);
 createConnection();
 
 const api = initAPI({
-  port: 3443,
   services: { getDatabase },
-  cert: {
-    key: fs.readFileSync('./src/test/test.cert/api.key', 'utf8'),
-    crt: fs.readFileSync('./src/test/test.cert/api.crt', 'utf8'),
-  },
 });
 
 describe('Testing v0 endpoints', () => {
