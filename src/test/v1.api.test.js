@@ -2,9 +2,12 @@ import { describe } from 'mocha';
 import chai, { expect } from 'chai';
 import chaiHttp from 'chai-http';
 import sinon from 'sinon';
+import dotenv from 'dotenv';
 import { createConnection, getDatabase } from './test.db/test.lowdbConfig.js';
 import initAPI from '../initApi.js';
 import errorHandler from '../utils/errorHandler.js';
+
+dotenv.config();
 
 chai.use(chaiHttp);
 
@@ -228,14 +231,20 @@ describe('testing v1 endpoints', () => {
             name: 'testv1_box',
             password: 'AA@01abcQW12',
           })
-          .end(({ body: { id } }) => {
+          .then(({ body: { id } }) => {
             chai.request(api)
-              .get(`/v1/safebox/${id}/items`)
-              .auth('notValidToken', { type: 'bearer' })
-              .send((err, res) => {
-                expect(res.status).to.be.equal(401);
-                expect(res.text).to.be.equal('Specified token does not match');
-                done();
+              .get(`/v1/safebox/${id}/open`)
+              .auth('testv1_box', 'AA@01abcQW12')
+              .then(({ body: { _token } }) => {
+                chai.request(api)
+                  .get(`/v1/safebox/${id}/items`)
+                  .auth('notValid', { type: 'bearer' })
+                  .send()
+                  .end((err, res) => {
+                    expect(res.status).to.be.equal(401);
+                    expect(res.text).to.be.equal('Specified token does not match');
+                    done();
+                  });
               });
           });
       });
@@ -263,13 +272,33 @@ describe('testing v1 endpoints', () => {
             name: 'testv1_box',
             password: 'AA@01abcQW12',
           })
-          .then(({ body: { id } }) => {
+          .then(({ body: { id: secondId } }) => {
             chai.request(api)
-              .get(`/v1/safebox/${id}/items`)
-              .end((err, res) => {
-                expect(res.status).to.be.equal(422);
-                expect(res.text).to.be.equal('Malformed expected data');
-                done();
+              .post('/v1/safebox')
+              .send({
+                name: 'test2v1_box',
+                password: 'AA@01abcQW12',
+              })
+              .then(({ body: { id } }) => {
+                chai.request(api)
+                  .get(`/v1/safebox/${id}/open`)
+                  .auth('testv1_box', 'AA@01abcQW12')
+                  .then(({ body: { token } }) => {
+                    chai.request(api)
+                      .get(`/v1/safebox/${secondId}/items`)
+                      .auth(token, { type: 'bearer' })
+                      .send({
+                        items: [
+                          'item0',
+                          'item1',
+                        ],
+                      })
+                      .end((err, res) => {
+                        expect(res.status).to.be.equal(422);
+                        expect(res.text).to.be.equal('Malformed expected data');
+                        done();
+                      });
+                  });
               });
           });
       });
@@ -339,7 +368,7 @@ describe('testing v1 endpoints', () => {
                   .end((err, res) => {
                     expect(res.status).to.be.equal(200);
                     expect(res.text).to.be.equal('Content correctly added to the safebox');
-                    expect(getDatabase.data.boxContent.id.items.length).to.be.equal(2);
+                    expect(getDatabase().data.boxContent[0].items.length).to.be.equal(2);
                     done();
                   });
               });
@@ -386,7 +415,7 @@ describe('testing v1 endpoints', () => {
           .put('/v1/safebox/unexistId/items')
           .end((err, res) => {
             expect(res.status).to.be.equal(404);
-            expect(res.status).to.be.equal('Resquested sadebox does not exist');
+            expect(res.text).to.be.equal('Requested safebox does not exist');
             done();
           });
       });
