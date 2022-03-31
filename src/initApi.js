@@ -2,7 +2,8 @@ import express from 'express';
 import servicesInjector from './api/v0/middlewares/servicesInjector.js';
 import errorHandler from './utils/errorHandler.js';
 import notFoundHandler from './utils/notFoundHandler.js';
-import boxRouter from './api/v0/routes/boxRouter.js';
+import betaBoxRouter from './api/v0/routes/boxRouter.js';
+import v1BoxRouter from './api/v1/routes/boxRouter.js';
 
 const initAPI = ({ services }) => {
   const api = express();
@@ -13,7 +14,8 @@ const initAPI = ({ services }) => {
 
   api.use(servicesInjector(services));
 
-  api.use('/safebox', boxRouter);
+  api.use('/v0/safebox', betaBoxRouter);
+  api.use('/v1/safebox', v1BoxRouter);
 
   api.use(notFoundHandler);
 
