@@ -1,8 +1,7 @@
-###Create
+### Create
 ### POST new Box
 ### PUT new items in Box
-### GET items From box
-
+### GET items From Box
 
 ### Globals
 @baseUrl = https://localhost:3000
