@@ -2,24 +2,16 @@ import { describe } from 'mocha';
 import chai, { expect } from 'chai';
 import sinon from 'sinon';
 import chaiHttp from 'chai-http';
-import fs from 'fs';
-import dotenv from 'dotenv';
 import { createConnection, getDatabase } from './test.db/test.lowdbConfig.js';
 import initAPI from '../initApi.js';
 import errorHandler from '../utils/errorHandler.js';
 
 chai.use(chaiHttp);
 
-dotenv.config();
 createConnection();
 
 const api = initAPI({
-  port: 3443,
   services: { getDatabase },
-  cert: {
-    key: fs.readFileSync('./src/test/test.cert/api.key', 'utf8'),
-    crt: fs.readFileSync('./src/test/test.cert/api.crt', 'utf8'),
-  },
 });
 
 describe('Testing v0 endpoints', () => {
@@ -31,13 +23,12 @@ describe('Testing v0 endpoints', () => {
   });
 
   describe('Given: POST call on /v0/safebox', () => {
-    describe(`When: Request header includes name: String
-        * : Request header includes password: String`, () => {
-      it(`Then: Response code 200
-            * : Response description equal to "Safebox correctly created"
+    describe(`When: Request body includes name: String
+        * : Request body includes password: String`, () => {
+      it(`Then: Response status 200
             * :  JSON with key id: String`, (done) => {
         chai.request(api)
-          .post('/safebox')
+          .post('/v0/safebox')
           .send({
             name: 'test-safebox',
             password: 'AA@01abcQW12',
@@ -49,18 +40,18 @@ describe('Testing v0 endpoints', () => {
           });
       });
     });
-    describe('When: Request header includes existing safebox name', () => {
+    describe('When: Request body includes existing safebox name', () => {
       it(`Then: Response status 409
             * : Response text 'Safebox already exist'`, (done) => {
         chai.request(api)
-          .post('/safebox')
+          .post('/v0/safebox')
           .send({
             name: 'test-safebox',
             password: 'AA@01abcQW12',
           })
           .end(() => {
             chai.request(api)
-              .post('/safebox')
+              .post('/v0/safebox')
               .send({
                 name: 'test-safebox',
                 password: 'AA@01abcQW12',
@@ -72,11 +63,11 @@ describe('Testing v0 endpoints', () => {
         done();
       });
     });
-    describe('When: Request header missing name or password', () => {
+    describe('When: Request body missing name or password', () => {
       it(`Then: Response status 422
             * : Response text 'Malformed expected data'`, (done) => {
         chai.request(api)
-          .post('/safebox')
+          .post('/v0/safebox')
           .send({
             name: 'other-safebox',
             password: '',
@@ -92,7 +83,7 @@ describe('Testing v0 endpoints', () => {
       it(`Then: Response status 404
             * : Response text 'Requested endpoint does not exist'`, (done) => {
         chai.request(api)
-          .get('/unexistEndpoint')
+          .get('/v0/unexistEndpoint')
           .send()
           .end((err, res) => {
             expect(res).to.have.status(404);
@@ -126,13 +117,13 @@ describe('Testing v0 endpoints', () => {
       it(`Then: Response code 200
             * : Response JSON with array of stored items`, (done) => {
         chai.request(api)
-          .post('/safebox')
+          .post('/v0/safebox')
           .send({
             name: 'test-safebox',
             password: 'AA@01abcQW12',
           }).end((err, { body: { id } }) => {
             chai.request(api)
-              .put(`/safebox/${id}/items`)
+              .put(`/v0/safebox/${id}/items`)
               .auth('test-safebox', 'AA@01abcQW12')
               .send({
                 items: [
@@ -142,7 +133,7 @@ describe('Testing v0 endpoints', () => {
               })
               .then(
                 chai.request(api)
-                  .get(`/safebox/${id}/items`)
+                  .get(`/v0/safebox/${id}/items`)
                   .auth('test-safebox', 'AA@01abcQW12')
                   .then((res) => {
                     expect(res.status).to.be.equal(200);
@@ -157,13 +148,13 @@ describe('Testing v0 endpoints', () => {
        But: Password in header is incorrect`, () => {
       it('Then: Response code 401', (done) => {
         chai.request(api)
-          .post('/safebox')
+          .post('/v0/safebox')
           .send({
             name: 'test-safebox',
             password: 'AA@01abcQW12',
           }).end((err, { body: { id } }) => {
             chai.request(api)
-              .get(`/safebox/${id}/items`)
+              .get(`/v0/safebox/${id}/items`)
               .auth('test-safebox', '1234')
               .then((res) => {
                 expect(res.status).to.be.equal(401);
@@ -176,7 +167,7 @@ describe('Testing v0 endpoints', () => {
       it(`Then: Response code 404
             * : Response description 'Request safebox does not exist'`, (done) => {
         chai.request(api)
-          .get('/safebox/unexistId/items')
+          .get('/v0/safebox/unexistId/items')
           .auth('test-safebox', '1234')
           .then((res) => {
             expect(res.status).to.be.equal(404);
@@ -189,13 +180,13 @@ describe('Testing v0 endpoints', () => {
       it(`Then: Response code 422
             * : Response description 'Malformed expected data'`, (done) => {
         chai.request(api)
-          .post('/safebox')
+          .post('/v0/safebox')
           .send({
             name: 'test-safebox',
             password: 'AA@01abcQW12',
           }).end((err, { body: { id } }) => {
             chai.request(api)
-              .get(`/safebox/${id}/items`)
+              .get(`/v0/safebox/${id}/items`)
               .then((res) => {
                 expect(res.status).to.be.equal(422);
                 expect(res.text).to.be.equal('Malformed expected data');
@@ -208,7 +199,7 @@ describe('Testing v0 endpoints', () => {
       it(`Then: Response code 500
             * : Response description 'Unexpected API error'`, (done) => {
         chai.request(api)
-          .post('/safebox')
+          .post('/v0/safebox')
           .send({
             name: 'test-safebox',
             password: 'AA@01abcQW12',
@@ -216,7 +207,7 @@ describe('Testing v0 endpoints', () => {
             getDatabase().data.boxContent = [];
 
             chai.request(api)
-              .get(`/safebox/${id}/items`)
+              .get(`/v0/safebox/${id}/items`)
               .auth('test-safebox', 'AA@01abcQW12')
               .then((res) => {
                 expect(res.status).to.be.equal(500);
@@ -236,13 +227,13 @@ describe('Testing v0 endpoints', () => {
             * : Response description 'Content correctly added to the safebox'
             * : Now in database {id}.items array have x more items`, (done) => {
         chai.request(api)
-          .post('/safebox')
+          .post('/v0/safebox')
           .send({
             name: 'test-safebox',
             password: 'AA@01abcQW12',
           }).end((err, { body: { id } }) => {
             chai.request(api)
-              .put(`/safebox/${id}/items`)
+              .put(`/v0/safebox/${id}/items`)
               .auth('test-safebox', 'AA@01abcQW12')
               .send({
                 items: [
@@ -264,13 +255,13 @@ describe('Testing v0 endpoints', () => {
       it(`Then: Response code 401
             * : Response description 'Specified Basic Auth does not match'`, (done) => {
         chai.request(api)
-          .post('/safebox')
+          .post('/v0/safebox')
           .send({
             name: 'test-safebox',
             password: 'AA@01abcQW12',
           }).end((err, { body: { id } }) => {
             chai.request(api)
-              .put(`/safebox/${id}/items`)
+              .put(`/v0/safebox/${id}/items`)
               .auth('test-safebox', '1234')
               .send({
                 items: [
@@ -290,7 +281,7 @@ describe('Testing v0 endpoints', () => {
       it(`Then: Response code 404
             * : Response description 'Requested safebox does not exist'`, (done) => {
         chai.request(api)
-          .put('/safebox/unexistId/items')
+          .put('/v0/safebox/unexistId/items')
           .auth('test-safebox', 'AA@01abcQW12')
           .end((err, res) => {
             expect(res.status).to.be.equal(404);
@@ -305,13 +296,13 @@ describe('Testing v0 endpoints', () => {
       it(`Then: Response code 422
             * : Response description 'Malformed expected data'`, (done) => {
         chai.request(api)
-          .post('/safebox')
+          .post('/v0/safebox')
           .send({
             name: 'test-safebox',
             password: 'AA@01abcQW12',
           }).end((err, { body: { id } }) => {
             chai.request(api)
-              .put(`/safebox/${id}/items`)
+              .put(`/v0/safebox/${id}/items`)
               .auth('test-safebox', 'AA@01abcQW12')
               .send({
                 items: [
@@ -329,7 +320,7 @@ describe('Testing v0 endpoints', () => {
       it(`Then: Response code 500
             * : Response description 'Unexpected API error'`, (done) => {
         chai.request(api)
-          .post('/safebox')
+          .post('/v0/safebox')
           .send({
             name: 'test-safebox',
             password: 'AA@01abcQW12',
@@ -337,7 +328,7 @@ describe('Testing v0 endpoints', () => {
             getDatabase().data.boxContent = [];
 
             chai.request(api)
-              .put(`/safebox/${id}/items`)
+              .put(`/v0/safebox/${id}/items`)
               .auth('test-safebox', 'AA@01abcQW12')
               .send({
                 items: [
