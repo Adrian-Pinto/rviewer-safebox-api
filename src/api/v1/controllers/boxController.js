@@ -1,42 +1,39 @@
+import jwt from 'jsonwebtoken';
+import getNewId from '../../../utils/getNewId.js';
+import doHash from '../../../utils/doHash.js';
+
 const postNewBox = ({ services, body: { name, password } }, res, next) => {
-  // trimPassword = password.trim();
-  // trimName = name.trim();
-  // isPasswordStrong -> REGeX.test(trimPassword)
-  // isName -> !!trimName.length;
+  const trimPassword = password?.trim();
+  const trimName = name?.trim();
+  const isPasswordStrong = /(?=(.*[A-Z]){2,})(?=(.*[!@#$&*]){1,})(?=(.*[0-9]){2,})(?=(.*[a-z]){3,}).{12,}/.test(trimPassword);
+  const isName = !!trimName?.length;
 
-  // if (!(isPasswordStrong && isName)) return next({status 422, message:'Malformed expected data'})
+  if (!(isPasswordStrong && isName)) return next({ status: 422, message: 'Malformed expected data' });
 
-  // isBox = services.getDatabase().data.boxes.find((box) => box.name === name);
+  const isBox = services.getDatabase().data.boxes.find((box) => box.name === trimName);
 
-  // if(isBox) return next({ status 409, message: 'Safebox already exist' })
+  if (isBox) return next({ status: 409, message: 'Safebox already exist' });
 
-  // boxId = getNewId();
-  // boxContentId = getNewId();
+  const boxId = getNewId();
+  const boxContentId = getNewId();
 
-  /**
-   * services db push boxes. {
-   *  id
-   *  name
-   *  timesTryToOpen: 0
-   *  isLocked: false
-   *  password: doHash(trimPassword)
-   *  boxContentId
-   * }
-   */
+  services.getDatabase().data.boxes.push({
+    id: boxId,
+    name: trimName,
+    timesTryToOpen: 0,
+    isLocked: false,
+    password: doHash(trimPassword),
+    boxContentId,
+  });
 
-  /**
-   * services db push boxes. {
-   *  id: boxContentId
-   *  items: []
-   * }
-   */
+  services.getDatabase().data.boxContent.push({
+    id: boxContentId,
+    items: [],
+  });
 
-  // async write db
-  //   then -> res 200 json { id: boxId }
-  //   catch -> next(error)
-
-  console.log('postNewBox');
-  res.send(200);
+  (async () => services.getDatabase().write())()
+    .then(() => res.status(200).json({ id: boxId }))
+    .catch((error) => next(error));
 };
 
 const openBoxById = ({ services, boxObject }, res, next) => {
@@ -50,6 +47,9 @@ const openBoxById = ({ services, boxObject }, res, next) => {
   const payLoad = { id };
 
   const token = jwt.sign(payLoad, process.env.TOKEN_SECRET);
+  jwt.sign({
+  data: 'foobar'
+}, process.env.TOKEN_SECRET, { expiresIn: '3m' });
 
   res.status(200).json({token})
 */
