@@ -1,3 +1,4 @@
+import jwt from 'jsonwebtoken';
 import doHash from '../../../utils/doHash.js';
 import boxSchema from '../../v0/models/boxModel.js';
 
@@ -23,26 +24,24 @@ export const basicAuth = (req, res, next) => {
 };
 
 export const tokenAuth = (req, res, next) => {
-  /*
-  const {authorization} = req.headers;
-  const token = authorization.split(' ')[1];
-  const decodedToken = jwt.verify(token, process.env.TOKEN_SECRET);
+  const { authorization } = req.headers;
+  const token = authorization?.split(' ')[1];
+  const decodedToken = jwt.verify(
+    token,
+    process.env.TOKEN_SECRET,
+    (err, succes) => (!err) && succes,
+  );
 
-  if(!token && !decodedToken.id) return next({ status: 401, message: 'Specified token does not match' });
+  const { id } = req.params;
 
-  const {boxId} = req.params;
+  const isBox = req.services.getDatabase().data.boxes.find((box) => box.id === id);
 
-  if(decodedToken.id !== boxId ) return next({ status: 422, message: 'Malformed expected data' });
+  if (!isBox) return next({ status: 404, message: 'Requested safebox does not exist' });
 
-  const isBox = req.services.getDatabase().data.boxes.find(
-    (box) => box.id === boxId
-  )
+  if (!(token && decodedToken.id)) return next({ status: 401, message: 'Specified token does not match' });
 
-  is (!isBox) return next({ status: 404, message: 'Requested safebox does not match' });
+  if (decodedToken?.id !== isBox.id) return next({ status: 422, message: 'Malformed expected data' });
 
   req.boxObject = isBox;
-  next();
-  */
-  console.log('tokenAuth');
   next();
 };
