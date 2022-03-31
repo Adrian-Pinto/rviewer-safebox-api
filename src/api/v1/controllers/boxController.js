@@ -36,25 +36,23 @@ const postNewBox = ({ services, body: { name, password } }, res, next) => {
     .catch((error) => next(error));
 };
 
-const openBoxById = ({ services, boxObject }, res, next) => {
-/*
-  const { id, isLocked, timesTryToOpen } = boxObject;
+const openBoxById = ({ boxObject }, res, next) => {
+  const { id, timesTryToOpen } = boxObject;
+  let { isLocked } = boxObject;
 
   isLocked = (timesTryToOpen >= 3);
 
-  if (isLocked) return next({ status: 423, message: 'Requested safeboxis locked' })
+  if (isLocked) return next({ status: 423, message: 'Requested safeboxis locked' });
 
   const payLoad = { id };
 
-  const token = jwt.sign(payLoad, process.env.TOKEN_SECRET);
-  jwt.sign({
-  data: 'foobar'
-}, process.env.TOKEN_SECRET, { expiresIn: '3m' });
+  const token = jwt.sign(
+    payLoad,
+    process.env.TOKEN_SECRET,
+    { expiresIn: '3m' },
+  );
 
-  res.status(200).json({token})
-*/
-  console.log('openBox');
-  res.send(200);
+  res.status(200).json({ token });
 };
 
 const getBoxItemsById = ({ services, boxObject }, res, next) => {
