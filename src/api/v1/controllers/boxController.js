@@ -1,6 +1,8 @@
 import jwt from 'jsonwebtoken';
+import itemsModel from '../../v0/models/itemsModel.js';
 import getNewId from '../../../utils/getNewId.js';
 import doHash from '../../../utils/doHash.js';
+import { decryptString, encryptString } from '../../../utils/ciphString.js';
 
 const postNewBox = ({ services, body: { name, password } }, res, next) => {
   const trimPassword = password?.trim();
@@ -56,38 +58,31 @@ const openBoxById = ({ boxObject }, res, next) => {
 };
 
 const getBoxItemsById = ({ services, boxObject }, res, next) => {
-/*
   const { isLocked, boxContentId } = boxObject;
 
-  if (isLocked) return next({ status: 423, message: 'Requested safebox is locked' })
+  if (isLocked) return next({ status: 423, message: 'Requested safebox is locked' });
 
-  const isBox = services.getDatabase().data.boxContent.find(
-    (box) => boxContentId === box.id)
-  )
+  const isBox = services.getDatabase().data.boxContent.find((box) => boxContentId === box.id);
 
-  if (!isBox) return next({ status 500, message: 'Unexpected API error' })
+  if (!isBox) return next({ status: 500, message: 'Unexpected API error' });
 
   const decryptItems = isBox.items.map((item) => decryptString(item));
 
-  res.status(200).send({ items: decryptItems })
-
-*/
-  console.log('getBoxItems');
-  res.send(200);
+  res.status(200).json({ items: decryptItems });
 };
 
 const putNewBoxItemById = ({ services, boxObject, body: { items } }, res, next) => {
-/*
-  if (!itemsModel(items)) return next { status: 422, message: 'Malformed expected data'}
+  if (!itemsModel(items)) return next({ status: 422, message: 'Malformed expected data' });
 
   const { isLocked, boxContentId } = boxObject;
 
-  if (isLocked) return next({ status: 423, message: Requested safebox is locked });
+  if (isLocked) return next({ status: 423, message: 'Requested safebox is locked' });
 
   const isBox = services.getDatabase().data.boxContent.find(
-    (box) => boxContentId === box.id)
+    (box) => boxContentId === box.id,
+  );
 
-  if (!isBox) return next({ status: 500, message: 'Unexpected API error' })
+  if (!isBox) return next({ status: 500, message: 'Unexpected API error' });
 
   const encryptedItems = items.map((item) => encryptString(item));
 
@@ -96,10 +91,6 @@ const putNewBoxItemById = ({ services, boxObject, body: { items } }, res, next) 
   (async () => services.getDatabase().write())()
     .then(() => res.status(200).send('Content correctly added to the safebox'))
     .catch((error) => next(error));
-  )
-*/
-  console.log('putBoxItems');
-  res.send(200);
 };
 
 export default {
