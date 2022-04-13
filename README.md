@@ -1,4 +1,20 @@
-# Securit-ish Challenge 
+# Safebox API
+Safebox is a Javascript challenge part of [Rviewer Codeathon](https://go.rviewer.io/javascript-codeathon-winners-stats/)
+
+ - [The Challenge](#the-challenge)
+   - [Requirements](#requirements)
+     - [Beta](#beta---functional-requirements)
+     - [V1](#v10---functional-requirements)
+   - [What are looking for?](#what-are-we-looking-for)
+ - [External dependencies](#external-dependencies)
+ - [Installation & Init.](#installation--init)
+   - [.env](#env)
+   - [certs](#certs)
+   - [launch server](#launch-server)
+ - [Runing test](#runing-test)
+ - [Usage over Rest Client](#usage-over-rest-client)
+
+# The Challenge 
 
 Securit-ish is a security company which main business is taking care of 
 houses and people belongings. 
@@ -10,7 +26,7 @@ providing them the ability to control their safebox remotely through a mobile ap
 As you know, the API should be strong and secure enough to avoid leaks and security
 issues.
 
-## Current Status
+**Current Status**
 
 The CEO of Securit-ish, who does not have technical background, has paid for an external
 consultant to develop the product. 
@@ -18,6 +34,8 @@ consultant to develop the product.
 This guy has created an API definition (with Swagger) with the main endpoints of it, but 
 once they start coding he left the company. So the CEO is looking for someone who could 
 help her to create the first version of that API.
+
+[^ Go top](#safebox-api)
 
 ## Requirements
 
@@ -57,14 +75,87 @@ comes when it does not have tests. So try to create tests covering, at least, th
 * **Document your decisions**. The CEO has a non-tech background so try to explain your decisions, 
 as well as any other technical requirement (how to run the API, external dependencies, etc ...)
 
----
+[^ Go top](#safebox-api)
 
-## How to submit your solution
+# External dependencies
+ - [Express](https://expressjs.com/)
+ - [Nodemon](https://nodemon.io/)
+ - [DotEnv](https://github.com/motdotla/dotenv)
+ - [AJV](https://ajv.js.org/)
+ - [LowDb](https://github.com/typicode/lowdb)
+ - [EsLint](https://eslint.org/)
+ - [c8](https://github.com/bcoe/c8)
+ - [Mocha](https://mochajs.org/)
+ - [Sinon](https://sinonjs.org/)
+ - [Chai](https://www.chaijs.com/)
+ - [Chai-HTTP](https://www.chaijs.com/plugins/chai-http/)
 
-* Push your code to the `devel` branch - we encourage you to commit regularly to show your thinking process was.
-* **Create a new Pull Request** to `main` branch & **merge it**.
+[^ Go top](#safebox-api)
 
-Once merged you **won't be able to change or add** anything to your solution, so double-check that everything is as
-you expected!
+# Installation & Init.
+## .env
+In .env we going to define the environment variables what our API needed
+~~~bash
+# First we do a .env file from .env.example
+# On root folder of project
+$ cp .env.example .env
+# And open it with a text editor for example VsCode or Vim
+$ code .env
+# On PORT you need to write any unsed port for example 3000
+# On CIPHER_ALGORITHM you can write any of Node createCipheriv compatible algorithm in my case i use aes-256-gcm
+# The SECRET is a hexadecimal string of 32 bytes of length. Lets see how generate one if you have a Node installed in your sistem
+# Enter in node cli
+$ node
+# Copy this
+$ crypto.randomBytes(32).toString('hex');
+# Store the result without ''
+# To finish the TOKEN_SECRET its the same but with 10 bytes
+$ crypto.randomBytes(10).toString('hex');
+~~~
+## Certificates
+To run Safebox API you need to make the cert and key files and put then on cert folder.
+In this case you can do it for a localhost usage, lets make then directly on cert folder
+~~~bash
+# On root folder of project
+$ cd src/cert
+# Make cert and key
+$ openssl req -nodes -new -x509 -keyout api.key -out api.cert
+~~~
+## Launch the server
+Once you have complete the previous steps we can launch the API
+~~~bash
+# On root folder of project
+# Installation
+npm i
+# Initialization
+npm start
+# Dev mode
+npm run dev
+~~~
+[^ Go top](#safebox-api)
+# Runing the tests
+~~~bash
+# On root folder of project
+# No coverage
+npm run test
+# With coverage
+npm run test:cov
+~~~
+[^ Go top](#safebox-api)
+# Usage over Rest Client
+Before you can launching petitions to the API you need to install Rest Client extension on your VsCode
+## Launch petitions
+From root folder of project go to `doc/requests` and there you will find two .rest files to do petitions over both versions of API
 
-Remember that **there is no countdown**, so take your time and implement a solution that you are proud!
+**Before all**
+
+Send request of variables pushing `send request` button.
+You can identifique then with
+
+`# @name <var>`
+
+**After set variables**
+
+You can launch a new petiton pushin the send button over each petition.
+
+[^ Go top](#safebox-api)
